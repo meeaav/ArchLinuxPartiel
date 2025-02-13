@@ -87,9 +87,8 @@ y
 EOF
 
 #Récupération de l'UID de la partition chiffrée
-crypt2=$(blkid -s UUID -o value /dev/sda2)
 arch-chroot /mnt << EOF
-
+crypt2=$(blkid -s UUID -o value /dev/sda2)
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 echo 'GRUB_CMDLINE_LINUX="cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root" >> /etc/default/grub
 

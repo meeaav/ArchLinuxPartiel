@@ -11,7 +11,7 @@ sfdisk /dev/sda << EOF
 EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
-password="esgi"
+password="qwerty"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
 echo -e "$password" | cryptsetup open /dev/sda2 crypt
 
@@ -95,6 +95,3 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 EOF
-
-umount -R /mnt
-reboot

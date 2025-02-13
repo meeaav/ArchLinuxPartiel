@@ -49,6 +49,8 @@
 #mount /dev/mapper/vg0-lv_fathersecret /mnt/fathersecret
 #mkdir /mnt/tmp
 #mount /dev/mapper/vg0-lv_tmp /mnt/tmp
+#mkdir -p /mnt/var/VM
+#mount /dev/mapper/vg0-lv_VM /mnt/var/VM
 
 #Création des répertoires
 mkfs.ext4 /dev/sda1
@@ -60,6 +62,5 @@ else
 fi
 mount /dev/sda1 /mnt/boot
 
-mkdir -p /mnt/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/var/VM
+
 

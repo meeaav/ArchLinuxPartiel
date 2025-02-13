@@ -86,12 +86,15 @@ y
 
 EOF
 
-
+#Récupération de l'UID de la partition chiffrée
+crypt2=$(blkid -s UUID -o value /dev/sda2)
 arch-chroot /mnt << EOF
 
-#enable cryptodisk /etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
-
+echo 'GRUB_CMDLINE_LINUX="cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root" >> /etc/default/grub
 EOF
+
+unmount -R /mnt
+reboot

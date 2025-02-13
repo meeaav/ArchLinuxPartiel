@@ -19,7 +19,7 @@ pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt
 
 lvcreate -L 2G -n lv_swap vg0
-lvcreate -L 20G -n lv_VM vg0
+lvcreate -L 15G -n lv_VM vg0
 lvcreate -L 5G -n lv_tmp vg0
 lvcreate -L 10G -n lv_home_father vg0
 lvcreate -L 10G -n lv_home_son vg0

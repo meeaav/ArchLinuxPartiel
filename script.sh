@@ -3,7 +3,9 @@
 #Fix de l'horloge système
 timedatectl set-timezone Europe/Paris
 loadkeys fr
-pacman -Syu
+pacman -Syu << EOF
+y
+EOF
 #Crééer une table de partition avec sfdisk, et ses partitions
 sfdisk /dev/sda << EOF
 1, 500M

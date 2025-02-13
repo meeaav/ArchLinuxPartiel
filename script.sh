@@ -11,8 +11,8 @@ EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
 password = "azerty123"
-echo -n "$password" | cryptsetup luksFormat /dev/sda2
-echo -n "$password" | cryptsetup luksOpen /dev/sda2 crypt
+echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
+echo -e "$password" | cryptsetup open /dev/sda2 crypt
 
 #Création des volumes logiques avec LVM
 pvcreate /dev/mapper/crypt

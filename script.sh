@@ -76,8 +76,19 @@ arch-chroot /mnt << EOF
 
 pacman -S grub
 y
+
+EOF
+
+arch-chroot /mnt << EOF
+
 pacman -S efibootmgr
 y
+
+EOF
+
+
+arch-chroot /mnt << EOF
+
 #enable cryptodisk /etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB

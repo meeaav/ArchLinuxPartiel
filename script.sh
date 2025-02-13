@@ -51,6 +51,7 @@
 #mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 
 #Création des répertoires
+mkfs.ext4 /dev/sda1
 # Monter /dev/sda1 sur /mnt/boot
 if [ -d /mnt/boot ]; then
     echo "Le répertoire /mnt/boot existe déjà."

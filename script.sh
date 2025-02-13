@@ -53,8 +53,6 @@ mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 #Création des répertoires
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
-mkdir /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi
 
 mkdir /mnt/var
 mount /dev/mapper/vg0-lv_VM /mnt/var

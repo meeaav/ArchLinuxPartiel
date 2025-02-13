@@ -10,7 +10,7 @@ sfdisk /dev/sda << EOF
 EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
-password = "azerty123"
+$password = "azerty123"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
 echo -e "$password" | cryptsetup open /dev/sda2 crypt
 

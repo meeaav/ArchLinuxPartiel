@@ -96,5 +96,3 @@ grub-mkconfig -o /boot/grub/grub.cfg
 echo 'GRUB_CMDLINE_LINUX="cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root" >> /etc/default/grub
 EOF
 
-unmount -R /mnt
-reboot

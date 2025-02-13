@@ -2,7 +2,8 @@
 
 #Fix de l'horloge système
 timedatectl set-timezone Europe/Paris
-
+loadkeys fr
+pacman -Syu
 #Crééer une table de partition avec sfdisk, et ses partitions
 sfdisk /dev/sda << EOF
 1, 500M
@@ -28,6 +29,7 @@ lvcreate -L 5G -n lv_share vg0
 lvcreate -l 100%FREE -n lv_root vg0
 
 #Formatage des partitions
+mkfs.vfat /dev/sda1
 mkfs.ext4 /dev/mapper/vg0-lv_root
 mkfs.ext4 /dev/mapper/vg0-lv_home_father
 mkfs.ext4 /dev/mapper/vg0-lv_home_son
@@ -54,18 +56,25 @@ mkdir /mnt/share
 mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
-#Création des répertoires
-mkfs.ext4 /dev/sda1
 # Monter /dev/sda1 sur /mnt/boot
 if [ -d /mnt/boot ]; then
     echo "Le répertoire /mnt/boot existe déjà."
 else
-    mkdir /mnt/boot
+    mkdir /mnt/boot/efi
 fi
-mount /dev/sda1 /mnt/boot
+mount /dev/sda1 /mnt/boot/efi
 
 #Sync des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 #Installation de la base
 pacstrap -K /mnt base linux linux-firmware
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+
+
+
+

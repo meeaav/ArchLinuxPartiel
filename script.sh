@@ -42,13 +42,14 @@ mkswap /dev/mapper/vg0-lv_swap
 #Montage des partitions
 mount /dev/mapper/vg0-lv_root /mnt
 mkdir /mnt/home
+mkdir /mnt/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/home/father
 mkdir /mnt/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/home/son
 mkdir /mnt/bin
 mount /dev/mapper/vg0-lv_bin /mnt/bin
-mkdir /mnt/fathersecret
-mount /dev/mapper/vg0-lv_fathersecret /mnt/fathersecret
+#mkdir /mnt/fathersecret
+#mount /dev/mapper/vg0-lv_fathersecret /mnt/fathersecret
 mkdir /mnt/tmp
 mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 mkdir -p /mnt/var/VM

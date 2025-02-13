@@ -9,7 +9,11 @@ sfdisk /dev/sda << EOF
 ;
 EOF
 
-#Chiffrer avec LVM le disque
+ #Coombo chiffrement LUKS et LVM
+cryptsetup luksFormat /dev/sda2
+cryptsetup open /dev/sda2 crypt
+
+#Création des volumes logiques avec LVM
 pvcreate /dev/sda2
 vgcreate vg0 /dev/sda2
 

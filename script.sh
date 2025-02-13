@@ -10,7 +10,7 @@ sfdisk /dev/sda << EOF
 EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
-read -s -p "Entrez le mot de passe LUKS : " password
+password = "azerty123"
 echo -n "$password" | cryptsetup luksFormat /dev/sda2
 echo -n "$password" | cryptsetup luksOpen /dev/sda2 crypt
 
@@ -23,7 +23,6 @@ lvcreate -L 15G -n lv_VM vg0
 lvcreate -L 5G -n lv_tmp vg0
 lvcreate -L 10G -n lv_home_father vg0
 lvcreate -L 10G -n lv_home_son vg0
-lvcreate -L 5G -n lv_bin vg0
 lvcreate -L 10G -n lv_fathersecret vg0
 lvcreate -L 5G -n lv_share vg0
 lvcreate -l 100%FREE -n lv_root vg0
@@ -32,7 +31,6 @@ lvcreate -l 100%FREE -n lv_root vg0
 mkfs.ext4 /dev/mapper/vg0-lv_root
 mkfs.ext4 /dev/mapper/vg0-lv_home_father
 mkfs.ext4 /dev/mapper/vg0-lv_home_son
-mkfs.ext4 /dev/mapper/vg0-lv_bin
 mkfs.ext4 /dev/mapper/vg0-lv_fathersecret
 mkfs.ext4 /dev/mapper/vg0-lv_tmp
 mkfs.ext4 /dev/mapper/vg0-lv_VM
@@ -46,8 +44,6 @@ mkdir /mnt/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/home/father
 mkdir /mnt/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-mkdir /mnt/bin
-mount /dev/mapper/vg0-lv_bin /mnt/bin
 #mkdir /mnt/fathersecret
 #mount /dev/mapper/vg0-lv_fathersecret /mnt/fathersecret
 mkdir /mnt/tmp
@@ -67,3 +63,9 @@ else
     mkdir /mnt/boot
 fi
 mount /dev/sda1 /mnt/boot
+
+#Sync des miroirs
+reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+
+#Installation de la base
+pacstrap -K /mnt base linux linux-firmware

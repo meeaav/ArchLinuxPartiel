@@ -10,12 +10,12 @@ sfdisk /dev/sda << EOF
 EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
-password="password"
-echo -n $password | cryptsetup luksFormat /dev/sda2
-echo -n $password | cryptsetup luksOpen /dev/sda2 crypt
+read -s -p "Entrez le mot de passe LUKS : " password
+echo -n "$password" | cryptsetup luksFormat /dev/sda2
+echo -n "$password" | cryptsetup luksOpen /dev/sda2 crypt
 
 #Création des volumes logiques avec LVM
-pvcreate /dev/mapper/crypt#
+pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt
 
 lvcreate -L 2G -n lv_swap vg0
@@ -40,7 +40,7 @@ mkswap /dev/mapper/vg0-lv_swap
 #Montage des partitions
 mount /dev/mapper/vg0-lv_root /mnt
 mkdir /mnt/home
-mount /dev/mapper/vg0-lv_home_father /mnt/home
+mount /dev/mapper/vg0-lv_home_father /mnt/home/father
 mkdir /mnt/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/home/son
 mkdir /mnt/bin
@@ -54,10 +54,6 @@ mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 
-mkdir /mnt/var
-mount /dev/mapper/vg0-lv_VM /mnt/var
-mkdir /mnt/var/log
 mkdir /mnt/var/VM
 mount /dev/mapper/vg0-lv_VM /mnt/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/var/log
 

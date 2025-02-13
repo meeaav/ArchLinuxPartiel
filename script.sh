@@ -74,7 +74,9 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt
 
-
+pacman -S grub
+pacman -S efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 
 
 

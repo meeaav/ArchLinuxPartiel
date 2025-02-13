@@ -5,8 +5,6 @@ timedatectl set-timezone Europe/Paris
 
 #Crééer une table de partition avec sfdisk
 sfdisk /dev/sda << EOF
-0, 512M, 
-, 512M
-;
+1, 512M, 
 ;
 EOF

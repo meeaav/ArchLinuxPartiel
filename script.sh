@@ -11,7 +11,7 @@ sfdisk /dev/sda << EOF
 EOF
 
 #Coombo chiffrement LUKS et LVM sur /dev/sda2
-$password = "azerty123"
+password="azerty123"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
 echo -e "$password" | cryptsetup open /dev/sda2 crypt
 
@@ -57,10 +57,10 @@ mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
 # Monter /dev/sda1 sur /mnt/boot
-if [ -d /mnt/boot ]; then
-    echo "Le répertoire /mnt/boot existe déjà."
+if [ -d /mnt/boot/efi ]; then
+    echo "Le répertoire /mnt/boot/efi existe déjà."
 else
-    mkdir /mnt/boot/efi
+    mkdir -p /mnt/boot/efi
 fi
 mount /dev/sda1 /mnt/boot/efi
 
@@ -72,7 +72,7 @@ pacstrap -K /mnt base linux linux-firmware
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-arch-chroot /mnt
+arch-chroot /mnt << EOF
 
 pacman -S grub
 pacman -S efibootmgr

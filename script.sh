@@ -15,8 +15,8 @@
 #echo -n $password | cryptsetup luksOpen /dev/sda2 crypt
 
 #Création des volumes logiques avec LVM
-pvcreate /dev/sda2
-vgcreate vg0 /dev/sda2
+pvcreate /dev/sda2/crypt
+vgcreate vg0 /dev/sda2/crypt
 
 lvcreate -L 2G -n lv_swap vg0
 lvcreate -L 20G -n lv_VM vg0

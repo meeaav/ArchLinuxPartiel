@@ -31,12 +31,14 @@ EOF
 arch-chroot /mnt << EOF
 mkdir -p /etc/i3
 cat > /etc/i3/config << EOL
+font pango:monospace 10
 set \$mod Mod4
 exec --no-startup-id nm-applet
 exec --no-startup-id pasystray
 exec --no-startup-id feh --bg-scale /usr/share/backgrounds/archlinux/arch-wallpaper.jpg
 bar {
     status_command i3status
+    font pango:monospace 10
 }
 bindsym \$mod+Return exec alacritty
 bindsym \$mod+d exec dmenu_run

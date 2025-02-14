@@ -21,7 +21,7 @@ EOF
 mkfs.vfat -F32 /dev/sda1  # Formater la partition EFI en vfat
 mkfs.ext4 /dev/sda2       # Formater la partition /boot en ext4
 
-# Chiffrement de la partition racine avec LUKS
+# Chiffrement de la partition LVM avec LUKS
 password="esgi"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda3
 echo -e "$password" | cryptsetup open /dev/sda3 crypt
@@ -50,11 +50,11 @@ mkfs.ext4 /dev/mapper/vg0-lv_share
 mkswap /dev/mapper/vg0-lv_swap
 
 # Montage des partitions
-mount /dev/mapper/vg0-lv_root /mnt
+mount /dev/mapper/vg0-lv_root /mnt          # Monter / (racine)
 mkdir /mnt/boot
-mount /dev/sda2 /mnt/boot  # Monter /boot
+mount /dev/sda2 /mnt/boot                   # Monter /boot
 mkdir /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi  # Monter /boot/efi (UEFI)
+mount /dev/sda1 /mnt/boot/efi               # Monter /boot/efi (UEFI)
 
 mkdir -p /mnt/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/home/father
@@ -98,9 +98,8 @@ mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Définir un mot de passe root
-echo "Définir un mot de passe pour l'utilisateur root :"
-passwd
+# Définir un mot de passe root à "esgi"
+echo -e "esgi\nesgi" | passwd
 EOF
 
 # Fin du script

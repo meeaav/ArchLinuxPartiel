@@ -3,25 +3,23 @@
 # Fix de l'horloge système
 timedatectl set-timezone Europe/Paris
 loadkeys fr
+pacman -Syu << EOF
+y
+EOF
 
-# Mise à jour du système
-pacman -Syu --noconfirm
-
-# Création de la table de partition avec sfdisk
-# Partition 1 : EFI (500M)
-# Partition 2 : /boot (500M)
-# Partition 3 : LUKS (reste du disque)
+# Créer une table de partition avec sfdisk, et ses partitions
 sfdisk /dev/sda << EOF
 , 500M, EF00
 , 500M, 8300
-;
+, , 8300
 EOF
 
 # Formater les partitions
-mkfs.vfat -F32 /dev/sda1  # Formater la partition EFI en vfat
-mkfs.ext4 /dev/sda2       # Formater la partition /boot en ext4
+mkfs.vfat /dev/sda1  # /boot/efi (UEFI)
+mkfs.ext4 /dev/sda2  # /boot (non chiffré)
+mkfs.ext4 /dev/sda3  # Partition pour LUKS (chiffrée)
 
-# Chiffrement de la partition LVM avec LUKS
+# Chiffrement LUKS sur /dev/sda3
 password="esgi"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda3
 echo -e "$password" | cryptsetup open /dev/sda3 crypt
@@ -50,55 +48,41 @@ mkfs.ext4 /dev/mapper/vg0-lv_share
 mkswap /dev/mapper/vg0-lv_swap
 
 # Montage des partitions
-mount /dev/mapper/vg0-lv_root /mnt          # Monter / (racine)
+mount /dev/mapper/vg0-lv_root /mnt
 mkdir /mnt/boot
-mount /dev/sda2 /mnt/boot                   # Monter /boot
+mount /dev/sda2 /mnt/boot  # /boot non chiffré
 mkdir /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi               # Monter /boot/efi (UEFI)
-
-mkdir -p /mnt/home/father
+mount /dev/sda1 /mnt/boot/efi  # /boot/efi (UEFI)
+mkdir /mnt/home
+mkdir /mnt/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/home/father
-mkdir -p /mnt/home/son
+mkdir /mnt/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-mkdir -p /mnt/tmp
+mkdir /mnt/tmp
 mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 mkdir -p /mnt/var/VM
 mount /dev/mapper/vg0-lv_VM /mnt/var/VM
-mkdir -p /mnt/share
+mkdir /mnt/share
 mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
-# Synchronisation des miroirs
+# Sync des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap /mnt base linux linux-firmware lvm2 efibootmgr grub cryptsetup
+pacstrap -K /mnt base linux linux-firmware lvm2 efibootmgr grub cryptsetup
 
-# Génération du fichier fstab
+# Génération de fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
-# Configuration du chroot
+# Configuration de GRUB et initramfs
+crypt2=$(blkid -s UUID -o value /dev/sda3)
 arch-chroot /mnt << EOF
 echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
-
-# Récupération de l'UUID de la partition chiffrée
-crypt2=$(blkid -s UUID -o value /dev/sda3)
 echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root\"" >> /etc/default/grub
-
-# Configuration de mkinitcpio
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
-
-# Configuration de GRUB pour le boot chiffré
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
-
-# Régénération de l'initramfs
+sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
 mkinitcpio -P
-
-# Installation de GRUB
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
-
 EOF
-
-# Fin du script
-echo "Installation terminée. Redémarrez le système avec 'reboot'."

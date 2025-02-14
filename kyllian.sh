@@ -137,6 +137,7 @@ arch-chroot /mnt << EOF
 pacman -S i3-wm i3status dmenu --noconfirm
 pacman -S --noconfirm lightdm lightdm-gtk-greeter
 pacman -S --noconfirm firefox vlc discord libreoffice-still 
+pacman -S --noconfirm alacritty thunar
 pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware open-vm-tools
 systemctl enable lightdm
 

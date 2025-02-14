@@ -132,5 +132,10 @@ arch-chroot /mnt << EOF
 pacman -S --noconfirm vi
 EOF
 
+#Installation des logiciels de base 
+arch-chroot /mnt << EOF
+pacman -S --noconfirm firefox vlc discord libreoffice-still
+EOF
+
 pacman tree -S -y
 echo "Le système est prêt à être redémarré."

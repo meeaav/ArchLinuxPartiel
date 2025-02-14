@@ -60,13 +60,24 @@ swapon /dev/mapper/vg0-lv_swap
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap /mnt base linux linux-firmware grub efibootmgr 
+echo "[INFO] Installation de GRUB"
+    # Installation de GRUB en UEFI
+pacstrap /mnt grub efibootmgr  # Installation des paquets dans le système cible
+
+    # Monter la partition EFI dans le système cible
 mkdir -p /mnt/boot/efi
 mount /dev/sda1 /mnt/boot/efi
 
+    # Entrer dans le chroot pour configurer GRUB
+arch-chroot /mnt /bin/bash <<EOF
+echo "[INFO] Installation de GRUB sur la partition EFI..."
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable
+grub-mkconfig -o /boot/grub/grub.cfg
+EOF
 
-# Génération du fichier fstab
-genfstab -U /mnt >> /mnt/etc/fstab
+    # Démonter après installation
+umount /mnt/boot/efi
+
 
 # Configuration du chiffrement dans mkinitcpio
 #arch-chroot /mnt << EOF

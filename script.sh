@@ -69,6 +69,9 @@ mount /dev/sda1 /mnt/boot/efi
 #Sync des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
+#Installation de la base
+pacstrap -K /mnt base linux linux-firmware 
+
 genfstab -U /mnt >> /mnt/etc/fstab
 #Récupération de l'UID de la partition chiffrée
 arch-chroot /mnt << EOF

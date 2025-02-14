@@ -55,14 +55,15 @@ mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
 # Monter /dev/sda1 sur /mnt/boot/efi
-mkdir -p /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi
 
 # Synchronisation des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap -K /mnt base linux linux-firmware
+pacstrap /mnt base linux linux-firmware grub efibootmgr 
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab

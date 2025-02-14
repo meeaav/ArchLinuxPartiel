@@ -57,8 +57,8 @@ swapon /dev/mapper/vg0-lv_swap
 # Monter /dev/sda1 sur /mnt/boot/efi
 
 
-mkdir -p /mnt/boot
-mount /dev/sda1 /mnt/boot
+mkdir -p /tmp/mnt/boot
+mount /dev/sda1 /tmp/mnt/boot
 
 # Synchronisation des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist

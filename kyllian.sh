@@ -10,15 +10,12 @@ EOF
 # Créer une table de partition avec sfdisk
 sfdisk /dev/sda << EOF
 1, 500M
-2, 500M
 ;
 EOF
 
 # Chiffrement LUKS et LVM sur /dev/sda2
-password="azerty123"
-echo -n $password | cryptsetup luksFormat /dev/sda3
-echo -n $password | cryptsetup open /dev/sda3 crypt
-
+cryptsetup luksFormat /dev/sda2
+cryptsetup open /dev/sda2 crypt
 # Création des volumes logiques avec LVM
 pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt
@@ -34,7 +31,6 @@ lvcreate -l 100%FREE -n lv_root vg0
 
 # Formatage des partitions
 mkfs.vfat /dev/sda1
-mkfs.ext4 /dev/sda2
 mkfs.ext4 /dev/mapper/vg0-lv_root
 mkfs.ext4 /dev/mapper/vg0-lv_home_father
 mkfs.ext4 /dev/mapper/vg0-lv_home_son
@@ -45,37 +41,35 @@ mkfs.ext4 /dev/mapper/vg0-lv_share
 mkswap /dev/mapper/vg0-lv_swap
 
 # Montage des partitions
-mount /dev/mapper/vg0-lv_root /mnt/VGSYS
-mkdir -p /mnt/VGSYS/home/father
-mount /dev/mapper/vg0-lv_home_father /mnt/VGSYS/home/father
-mkdir -p /mnt/VGSYS/home/son
-mount /dev/mapper/vg0-lv_home_son /mnt/VGSYS/home/son
-mkdir -p /mnt/VGSYS/tmp
-mount /dev/mapper/vg0-lv_tmp /mnt/VGSYS/tmp
-mkdir -p /mnt/VGSYS/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/VGSYS/var/VM
-mkdir -p /mnt/VGSYS/share
-mount /dev/mapper/vg0-lv_share /mnt/VGSYS/share
+mount /dev/mapper/vg0-lv_root /mnt
+mkdir -p /mnt/home/father
+mount /dev/mapper/vg0-lv_home_father /mnt/home/father
+mkdir -p /mnt/home/son
+mount /dev/mapper/vg0-lv_home_son /mnt/home/son
+mkdir -p /mnt/tmp
+mount /dev/mapper/vg0-lv_tmp /mnt/tmp
+mkdir -p /mnt/var/VM
+mount /dev/mapper/vg0-lv_VM /mnt/var/VM
+mkdir -p /mnt/share
+mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
-# Monter /dev/sda1 sur /mnt/boot/efi
+# Monter /dev/sda1 sur un autre point de montage pour GRUB
 
-mount /dev/sda2 /mtn 
+mount /dev/sda1 /boot
+mount --bind /boot /mnt/boot
 
-mkdir -p /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi
 
 # Synchronisation des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
-# Installation de la base
-pacstrap -K /mnt base linux linux-firmware
+# Installation de la base du système pr
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Configuration de GRUB
-crypt2=$(blkid -s UUID -o value /dev/sda3)
+crypt2=$(blkid -s UUID -o value /dev/sda2)
 echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root\"" >> /mnt/etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /mnt/etc/default/grub
 

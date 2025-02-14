@@ -92,7 +92,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
 
-#Création des users, avec leur home, et azerty1Z3 pour mdp, et le groupe pour dossier partagé
+#Création des users, avec leur home, et azerty123 pour mdp, et le groupe pour dossier partagé
 arch-chroot /mnt << EOF
 groupadd share
 
@@ -104,7 +104,7 @@ EOF
 # Générer des mots de passe chiffrés
 encrypted_esgi=$(openssl passwd -1 "esgi")
 encrypted_father=$(openssl passwd -1 "azerty123")
-encrypted_son=$(openssl passwd -1 "azerty1Z3")
+encrypted_son=$(openssl passwd -1 "azerty123")
 
 # Créer les utilisateurs avec des mots de passe chiffrés
 useradd esgi -p "$encrypted_esgi" -s /bin/bash -m

@@ -58,6 +58,7 @@ swapon /dev/mapper/vg0-lv_swap
 # Monter /dev/sda1 sur un autre point de montage pour GRUB
 
 mount /dev/sda1 /boot
+mkdir /mnt/boot
 mount --bind /boot /mnt/boot
 
 

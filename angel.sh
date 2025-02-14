@@ -127,6 +127,10 @@ ln -sf /mnt/share /home/son/share
 chown father:share /home/father/share
 chown son:share /home/son/share
 
+#Installation de vi pour le fils 
+arch-chroot /mnt << EOF
+pacman -S --noconfirm vi
+EOF
 
 pacman tree -S -y
 echo "Le système est prêt à être redémarré."

@@ -55,17 +55,19 @@ mkdir -p /mnt/share
 mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
-# Monter /dev/sda1 sur un autre point de montage pour GRUB
-
+# Monter /dev/sda1 sur /boot (en dehors de /mnt)
+mkdir -p /boot
 mount /dev/sda1 /boot
-mkdir /mnt/boot
-mount --bind /boot /mnt/boot
 
+# Lier /boot à /mnt/boot avec un bind mount
+mkdir -p /mnt/boot
+mount --bind /boot /mnt/boot
 
 # Synchronisation des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
-# Installation de la base du système pr
+# Installation de la base
+pacstrap -K /mnt base linux linux-firmware
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -78,11 +80,11 @@ echo 'GRUB_ENABLE_CRYPTODISK=y' >> /mnt/etc/default/grub
 # Installation de GRUB et configuration
 arch-chroot /mnt << EOF
 pacman -S --noconfirm grub efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
-# Installation de GNOME
+# Installation de GNOME (optionnel)
 #arch-chroot /mnt << EOF
 #pacman -S --noconfirm gnome gnome-extra
 #systemctl enable gdm

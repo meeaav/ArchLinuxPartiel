@@ -95,7 +95,8 @@ EOF
 #Création des users, avec leur home, et azerty1Z3 pour mdp, et le groupe pour dossier partagé
 arch-chroot /mnt << EOF
 groupadd share
-useradd -d /home/father -m father -p azerty1Z3 -G share -s /bin/bash
+useradd esgi -p esgi -s /bin/bash -m
+useradd -d /home/father -m father -p azerty123 -G share -s /bin/bash
 useradd -d /home/son -m son -p azerty1Z3 -G share -s /bin/bash
 EOF
 

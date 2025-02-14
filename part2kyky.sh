@@ -29,17 +29,25 @@ EOL
 EOF
 
 arch-chroot /mnt << EOF
-mkdir -p /etc/i3
 cat > /etc/i3/config << EOL
+# Police par défaut
 font pango:monospace 10
+
+# Touche Mod (Windows ou Super)
 set \$mod Mod4
+
+# Démarrage des applications au lancement
 exec --no-startup-id nm-applet
 exec --no-startup-id pasystray
 exec --no-startup-id feh --bg-scale /usr/share/backgrounds/archlinux/arch-wallpaper.jpg
+
+# Barre d'état
 bar {
     status_command i3status
     font pango:monospace 10
 }
+
+# Raccourcis clavier
 bindsym \$mod+Return exec alacritty
 bindsym \$mod+d exec dmenu_run
 bindsym \$mod+Shift+q kill

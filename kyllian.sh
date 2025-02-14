@@ -134,11 +134,8 @@ EOF
 
 #Installation des logiciels de base 
 arch-chroot /mnt << EOF
-pacman -S --noconfirm firefox vlc discord libreoffice-still
-EOF
-
-arch-chroot /mnt << EOF
-pacman -S i3
+pacman -S --noconfirm firefox vlc discord libreoffice-still i3
+pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware open-vm-tools
 EOF
 
 # Démontage des partitions

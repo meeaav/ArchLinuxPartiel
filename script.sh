@@ -75,7 +75,6 @@ pacstrap -K /mnt base linux linux-firmware lvm2 efibootmgr grub
 genfstab -U /mnt >> /mnt/etc/fstab
 #Récupération de l'UID de la partition chiffrée
 arch-chroot /mnt << EOF
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
 EOF
 
@@ -88,6 +87,7 @@ pacman -S --noconfirm cryptsetup
 sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 mkinitcpio -P
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 

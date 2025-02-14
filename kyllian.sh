@@ -134,7 +134,7 @@ EOF
 
 #Installation des logiciels de base 
 arch-chroot /mnt << EOF
-pacman -S i3-wm i3status dmenu --noconfirm
 pacman -S --noconfirm firefox vlc discord libreoffice-still thunar
 pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware open-vm-tools
+pacman -S i3-wm i3status dmenu --noconfirm
 EOF

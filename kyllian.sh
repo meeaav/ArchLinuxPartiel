@@ -43,14 +43,14 @@ mkswap /dev/mapper/vg0-lv_swap
 # Montage des partitions
 mount /dev/mapper/vg0-lv_root /mnt
 mkdir -p /mnt/VGSYS/home/father
-mount /dev/mapper/vg0-lv_home_father /mnt/home/father
+mount /dev/mapper/vg0-lv_home_father /mnt/VGSYS/home/father
 mkdir -p /mnt/VGSYS/home/son
-mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-mount /dev/mapper/vg0-lv_tmp /mnt/tmp
+mount /dev/mapper/vg0-lv_home_son /mnt/VGSYS/home/son
+mount /dev/mapper/vg0-lv_tmp /mnt/VGSYS/tmp
 mkdir -p /mnt/VGSYS/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/var/VM
+mount /dev/mapper/vg0-lv_VM /mnt/VGSYS/var/VM
 mkdir -p /mnt/VGSYS/share
-mount /dev/mapper/vg0-lv_share /mnt/share
+mount /dev/mapper/vg0-lv_share /mnt/VGSYS/share
 swapon /dev/mapper/vg0-lv_swap
 
 # Monter /dev/sda1 sur /mnt/boot/efi

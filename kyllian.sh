@@ -46,6 +46,7 @@ mkdir -p /mnt/VGSYS/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/VGSYS/home/father
 mkdir -p /mnt/VGSYS/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/VGSYS/home/son
+mkdir -p /mnt/VGSYS/tmp
 mount /dev/mapper/vg0-lv_tmp /mnt/VGSYS/tmp
 mkdir -p /mnt/VGSYS/var/VM
 mount /dev/mapper/vg0-lv_VM /mnt/VGSYS/var/VM

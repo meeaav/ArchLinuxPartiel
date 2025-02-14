@@ -43,7 +43,7 @@ mkfs.ext4 /dev/mapper/vg0-lv_share
 mkswap /dev/mapper/vg0-lv_swap
 
 # Montage des partitions
-mount /dev/mapper/vg0-lv_root /mnt
+mount /dev/mapper/vg0-lv_root /mnt/VGSYS
 mkdir -p /mnt/VGSYS/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/VGSYS/home/father
 mkdir -p /mnt/VGSYS/home/son

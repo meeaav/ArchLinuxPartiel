@@ -64,17 +64,17 @@ mount /dev/sda1 /tmp/mnt/boot
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap -K /mnt base linux linux-firmware
+pacstrap -K /tmp/mnt/ base linux linux-firmware
 
 # Génération du fichier fstab
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /tmp/mnt/ >> /mnt/etc/fstab
 
 # Configuration du chiffrement dans mkinitcpio
-arch-chroot /mnt << EOF
-echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
-mkinitcpio -P
-EOF
+#arch-chroot /mnt << EOF
+#echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
+#sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
+#mkinitcpio -P
+#EOF
 
 # Configuration de GRUB
 crypt2=$(blkid -s UUID -o value /dev/sda2)
@@ -82,7 +82,7 @@ echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-l
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /mnt/etc/default/grub
 
 # Installation de GRUB et configuration
-arch-chroot /mnt << EOF
+arch-chroot /tmp/mnt/  << EOF
 pacman -S --noconfirm grub efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg

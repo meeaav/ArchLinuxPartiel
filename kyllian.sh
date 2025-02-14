@@ -96,6 +96,11 @@ EOF
 arch-chroot /mnt << EOF
 groupadd share
 
+passwd << EOF
+esgi
+esgi
+EOF
+
 # Générer des mots de passe chiffrés
 encrypted_esgi=$(openssl passwd -1 "esgi")
 encrypted_father=$(openssl passwd -1 "azerty123")

@@ -5,6 +5,25 @@ azerty1Z3
 azerty1Z3
 EOF
 
+#Création des users, avec leur home, et azerty1Z3 pour mdp, et le groupe pour dossier partagé
+arch-chroot /mnt << EOF
+groupadd share
+
+# Générer des mots de passe chiffrés
+encrypted_esgi=$(openssl passwd -1 "esgi")
+encrypted_father=$(openssl passwd -1 "azerty123")
+encrypted_son=$(openssl passwd -1 "azerty1Z3")
+
+# Créer les utilisateurs avec des mots de passe chiffrés
+useradd esgi -p "$encrypted_esgi" -s /bin/bash -m
+useradd -d /home/father -m father -p "$encrypted_father" -G share -s /bin/bash
+useradd -d /home/son -m son -p "$encrypted_son" -G share -s /bin/bash
+EOF
+
+#Création des arboréscences pour les users
+mkdir -p /mnt/home/father/{Documents,Images,Musique,Vidéos}
+mkdir -p /mnt/home/son/{Documents,Images,Musique,Vidéos}
+
 arch-chroot /mnt << EOF
 pacman -S hyprland --noconfirm
 pacman -S --noconfirm sddm alacritty thunar firefox
@@ -70,4 +89,5 @@ gestures {
 misc {
     disable_hyprland_logo = true
 }
+EOF
 EOF

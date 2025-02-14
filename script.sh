@@ -1,68 +1,42 @@
 #!/bin/bash
 
-#Fix de l'horloge système
-timedatectl set-timezone Europe/Paris
-loadkeys fr
-pacman -Syu << EOF
-y
-EOF
-#Crééer une table de partition avec sfdisk, et ses partitions
-sfdisk /dev/sda << EOF
-1, 500M
-;
-EOF
-
-#Coombo chiffrement LUKS et LVM sur /dev/sda2
 password="esgi"
-echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
+
+# Démonter les partitions
+umount /mnt/share
+umount /mnt/var/VM
+umount /mnt/tmp
+umount /mnt/home/son
+umount /mnt/home/father
+umount /mnt/home
+umount /mnt/boot/efi
+umount /mnt
+
+# Désactiver le swap
+swapoff /dev/mapper/vg0-lv_swap
+
+# Désactiver les volumes logiques LVM
+lvchange -an /dev/vg0/lv_root
+lvchange -an /dev/vg0/lv_home_father
+lvchange -an /dev/vg0/lv_home_son
+lvchange -an /dev/vg0/lv_fathersecret
+lvchange -an /dev/vg0/lv_tmp
+lvchange -an /dev/vg0/lv_VM
+lvchange -an /dev/vg0/lv_share
+lvchange -an /dev/vg0/lv_swap
+
+# Désactiver le groupe de volumes LVM
+vgchange -an vg0
+
+# Fermer le conteneur LUKS
+cryptsetup luksClose crypt
+
+# Vérifier le mot de passe LUKS
 echo -e "$password" | cryptsetup luksOpen /dev/sda2 crypt
 
-#Création des volumes logiques avec LVM
-pvcreate /dev/mapper/crypt
-vgcreate vg0 /dev/mapper/crypt
-
-lvcreate -L 2G -n lv_swap vg0
-lvcreate -L 15G -n lv_VM vg0
-lvcreate -L 5G -n lv_tmp vg0
-lvcreate -L 10G -n lv_home_father vg0
-lvcreate -L 10G -n lv_home_son vg0
-lvcreate -L 10G -n lv_fathersecret vg0
-lvcreate -L 5G -n lv_share vg0
-lvcreate -l 100%FREE -n lv_root vg0
-
-#Formatage des partitions
-mkfs.vfat /dev/sda1
-mkfs.ext4 /dev/mapper/vg0-lv_root
-mkfs.ext4 /dev/mapper/vg0-lv_home_father
-mkfs.ext4 /dev/mapper/vg0-lv_home_son
-mkfs.ext4 /dev/mapper/vg0-lv_fathersecret
-mkfs.ext4 /dev/mapper/vg0-lv_tmp
-mkfs.ext4 /dev/mapper/vg0-lv_VM
-mkfs.ext4 /dev/mapper/vg0-lv_share
-mkswap /dev/mapper/vg0-lv_swap
-
-#Montage des partitions
-mount /dev/mapper/vg0-lv_root /mnt
-mkdir /mnt/home
-mkdir /mnt/home/father
-mount /dev/mapper/vg0-lv_home_father /mnt/home/father
-mkdir /mnt/home/son
-mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-#mkdir /mnt/fathersecret
-#mount /dev/mapper/vg0-lv_fathersecret /mnt/fathersecret
-mkdir /mnt/tmp
-mount /dev/mapper/vg0-lv_tmp /mnt/tmp
-mkdir -p /mnt/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/var/VM
-mkdir /mnt/share
-mount /dev/mapper/vg0-lv_share /mnt/share
-swapon /dev/mapper/vg0-lv_swap
-
-# Monter /dev/sda1 sur /mnt/boot
-if [ -d /mnt/boot/efi ]; then
-    echo "Le répertoire /mnt/boot/efi existe déjà."
+if [ $? -eq 0 ]; then
+    echo "Le mot de passe LUKS fonctionne correctement."
+    cryptsetup status crypt
 else
-    mkdir -p /mnt/boot/efi
+    echo "Le mot de passe LUKS est incorrect."
 fi
-mount /dev/sda1 /mnt/boot/efi
-

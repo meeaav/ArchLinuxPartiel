@@ -70,7 +70,7 @@ mount /dev/sda1 /mnt/boot/efi
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 #Installation de la base
-pacstrap -K /mnt base linux linux-firmware lvm2 efibootmgr grub
+pacstrap -K /mnt base linux linux-firmware lvm2 efibootmgr grub cryptsetup 
 
 genfstab -U /mnt >> /mnt/etc/fstab
 #Récupération de l'UID de la partition chiffrée

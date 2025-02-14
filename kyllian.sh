@@ -94,21 +94,24 @@ EOF
 
 #Création des users, avec leur home, et azerty1Z3 pour mdp, et le groupe pour dossier partagé
 arch-chroot /mnt << EOF
-useradd -d /home/father -m father -p azerty1Z3 -G share -s /bin/bash
-useradd -d /home/son -m son -p azerty1Z3 -G share -s /bin/bash
+groupadd share
+useradd -d /home/father -m father -G share -s /bin/bash
+useradd -d /home/son -m son -G share -s /bin/bash
+echo "father:azerty1Z3" | chpasswd
+echo "son:azerty1Z3" | chpasswd
 EOF
 
-#Création du dossier partagé
-mkdir /mnt/share
+# Création du dossier partagé
+mkdir -p /mnt/share
 chgrp share /mnt/share
 chmod 770 /mnt/share
 
-#Création des dossiers pour les users
-mkdir /mnt/home/father/share
+# Création des dossiers pour les utilisateurs
+mkdir -p /mnt/home/father/share
 chown father:share /mnt/home/father/share
 chmod 770 /mnt/home/father/share
 
-mkdir /mnt/home/son/share
+mkdir -p /mnt/home/son/share
 chown son:share /mnt/home/son/share
 chmod 770 /mnt/home/son/share
 
@@ -126,20 +129,17 @@ arch-chroot /mnt << EOF
 pacman -S --noconfirm firefox gnome-calculator libreoffice-still brave vlc discord steam
 EOF
 
-#Installation de hyprland pour le père
+# Installation de Hyprland pour le père
 arch-chroot /mnt << EOF
 pacman -S --noconfirm hyprland
 EOF
 
-#Ajout d'une configuration pour le père
-
-
-
-#Installation de l'interface graphique gnome
+# Installation de GNOME pour le fils
 arch-chroot /mnt << EOF
 pacman -S --noconfirm gnome gnome-extra
 systemctl enable gdm
 EOF
-cryptsetup close crypt
+
+
 echo "Le système est prêt à être redémarré."
 reboot

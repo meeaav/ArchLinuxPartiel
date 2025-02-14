@@ -14,7 +14,7 @@ sfdisk /dev/sda << EOF
 EOF
 
 # Chiffrement LUKS et LVM sur /dev/sda2
-password="esgi"
+password="azerty123"
 echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
 echo -e "$password" | cryptsetup open /dev/sda2 crypt
 
@@ -97,17 +97,15 @@ arch-chroot /mnt << EOF
 groupadd share
 
 passwd << EOF
-esgi
-esgi
+azerty123
+azerty123
 EOF
 
 # Générer des mots de passe chiffrés
-encrypted_esgi=$(openssl passwd -1 "esgi")
 encrypted_father=$(openssl passwd -1 "azerty123")
 encrypted_son=$(openssl passwd -1 "azerty123")
 
 # Créer les utilisateurs avec des mots de passe chiffrés
-useradd esgi -p "$encrypted_esgi" -s /bin/bash -m
 useradd -d /home/father -m father -p "$encrypted_father" -G share -s /bin/bash
 useradd -d /home/son -m son -p "$encrypted_son" -G share -s /bin/bash
 EOF

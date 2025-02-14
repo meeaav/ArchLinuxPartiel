@@ -99,7 +99,5 @@ useradd -d /home/father -m father -p azerty1Z3 -G share -s /bin/bash
 useradd -d /home/son -m son -p azerty1Z3 -G share -s /bin/bash
 EOF
 
-
-
 echo "Le système est prêt à être redémarré."
 reboot

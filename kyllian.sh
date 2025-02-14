@@ -34,6 +34,7 @@ lvcreate -l 100%FREE -n lv_root vg0
 
 # Formatage des partitions
 mkfs.vfat /dev/sda1
+mkfs.ext4 /dev/sda2
 mkfs.ext4 /dev/mapper/vg0-lv_root
 mkfs.ext4 /dev/mapper/vg0-lv_home_father
 mkfs.ext4 /dev/mapper/vg0-lv_home_son

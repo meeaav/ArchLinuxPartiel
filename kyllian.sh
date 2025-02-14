@@ -14,9 +14,9 @@ sfdisk /dev/sda << EOF
 EOF
 
 # Chiffrement LUKS et LVM sur /dev/sda2
-password="esgi"
-echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
-echo -e "$password" | cryptsetup open /dev/sda2 crypt
+cryptsetup luksFormat /dev/sda2
+cryptsetup open /dev/sda2 crypt
+
 # Création des volumes logiques avec LVM
 pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt
@@ -67,7 +67,7 @@ mount --bind /boot /mnt/boot
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap -K /mnt base linux linux-firmware
+pacstrap -K /mnt base linux linux-firmware lvm2
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -76,6 +76,12 @@ genfstab -U /mnt >> /mnt/etc/fstab
 crypt2=$(blkid -s UUID -o value /dev/sda2)
 echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root\"" >> /mnt/etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /mnt/etc/default/grub
+
+# Ajouter les hooks encrypt et lvm2 dans /etc/mkinitcpio.conf
+arch-chroot /mnt sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/' /etc/mkinitcpio.conf
+
+# Régénérer l'initramfs
+arch-chroot /mnt mkinitcpio -P
 
 # Installation de GRUB et configuration
 arch-chroot /mnt << EOF

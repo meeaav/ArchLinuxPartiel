@@ -23,18 +23,24 @@ EOF
 #Création des arboréscences pour les users
 mkdir -p /mnt/home/father/{Documents,Images,Musique,Vidéos}
 mkdir -p /mnt/home/son/{Documents,Images,Musique,Vidéos}
-
 arch-chroot /mnt << EOF
 pacman -S hyprland --noconfirm
 pacman -S --noconfirm sddm alacritty thunar firefox
 systemctl enable sddm
+EOF
 mkdir -p /etc/sddm.conf.d
-cat > /etc/sddm.conf.d/hyprland.conf << EOF
+arch-chroot /mnt << EOF
+mkdir -p /etc/sddm.conf.d
+cat > /etc/sddm.conf.d/hyprland.conf << EOL
 [Autologin]
 Session=hyprland.desktop
 User=father
+EOL
+EOF 
+
+arch-chroot /mnt << EOF
 mkdir -p /etc/hypr
-cat > /etc/hypr/hyprland.conf << EOF
+cat > /etc/hypr/hyprland.conf << EOL
 exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 exec-once = waybar
 exec-once = nm-applet --indicator
@@ -89,5 +95,5 @@ gestures {
 misc {
     disable_hyprland_logo = true
 }
-EOF
+EOL
 EOF

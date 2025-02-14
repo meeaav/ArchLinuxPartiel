@@ -18,47 +18,7 @@ pacman -S --noconfirm alacritty thunar firefox
 systemctl enable lightdm
 EOF
 
-arch-chroot /mnt << EOF
-mkdir -p /etc/lightdm/lightdm.conf.d
-cat > /etc/lightdm/lightdm.conf.d/i3.conf << EOL
-[Seat:*]
-session-wrapper=/etc/lightdm/Xsession
-greeter-session=lightdm-gtk-greeter
-user-session=i3
-EOL
-EOF
 
-arch-chroot /mnt << EOF
-cat > /etc/i3/config << EOL
-# Police par défaut
-font pango:monospace 10
-
-# Touche Mod (Windows ou Super)
-set \$mod Mod4
-
-# Démarrage des applications au lancement
-exec --no-startup-id nm-applet
-exec --no-startup-id pasystray
-exec --no-startup-id feh --bg-scale /usr/share/backgrounds/archlinux/arch-wallpaper.jpg
-
-# Barre d'état
-bar {
-    status_command i3status
-    font pango:monospace 10
-}
-
-# Raccourcis clavier
-bindsym \$mod+Return exec alacritty
-bindsym \$mod+d exec dmenu_run
-bindsym \$mod+Shift+q kill
-bindsym \$mod+h split h
-bindsym \$mod+v split v
-bindsym \$mod+f fullscreen toggle
-bindsym \$mod+Shift+c reload
-bindsym \$mod+Shift+r restart
-bindsym \$mod+Shift+e exec "i3-nagbar -t warning -m 'Voulez-vous vraiment quitter i3 ?' -b 'Oui' 'i3-msg exit'"
-EOL
-EOF
 
 chmod 755 /mnt/home/father
 chmod 755 /mnt/home/son

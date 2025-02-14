@@ -14,10 +14,8 @@ sfdisk /dev/sda << EOF
 EOF
 
 # Chiffrement LUKS et LVM sur /dev/sda2
-password="esgi"
-echo -e "$password\n$password" | cryptsetup luksFormat /dev/sda2
-echo -e "$password" | cryptsetup luksOpen /dev/sda2 crypt
-
+cryptsetup luksFormat /dev/sda2
+cryptsetup open /dev/sda2 crypt
 # Création des volumes logiques avec LVM
 pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt

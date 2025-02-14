@@ -91,3 +91,56 @@ grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
+
+#Création des users, avec leur home, et azerty1Z3 pour mdp, et le groupe pour dossier partagé
+arch-chroot /mnt << EOF
+groupadd share
+
+# Générer des mots de passe chiffrés
+encrypted_esgi=$(openssl passwd -1 "esgi")
+encrypted_father=$(openssl passwd -1 "azerty123")
+encrypted_son=$(openssl passwd -1 "azerty1Z3")
+
+# Créer les utilisateurs avec des mots de passe chiffrés
+useradd esgi -p "$encrypted_esgi" -s /bin/bash -m
+useradd -d /home/father -m father -p "$encrypted_father" -G share -s /bin/bash
+useradd -d /home/son -m son -p "$encrypted_son" -G share -s /bin/bash
+EOF
+
+#Création des arboréscences pour les users
+mkdir -p /mnt/home/father/{Documents,Images,Musique,Vidéos}
+mkdir -p /mnt/home/son/{Documents,Images,Musique,Vidéos}
+
+#Création du dossier partagé
+mkdir -p /mnt/share
+
+# Définir le groupe propriétaire et les permissions
+chgrp share /mnt/share
+chmod 2770 /mnt/share  # 2 pour le sticky bit, 770 pour les permissions
+
+# Création des liens symboliques dans les répertoires home des utilisateurs
+mkdir -p /home/father /home/son
+ln -sf /mnt/share /home/father/share
+ln -sf /mnt/share /home/son/share
+
+# Définir les propriétaires et les permissions pour les liens symboliques
+chown father:share /home/father/share
+chown son:share /home/son/share
+
+#Installation de vi pour le fils 
+arch-chroot /mnt << EOF
+pacman -S --noconfirm vi
+EOF
+
+#Installation des logiciels de base 
+arch-chroot /mnt << EOF
+pacman -S --noconfirm firefox vlc discord libreoffice-still
+EOF
+
+arch-chroot /mnt << EOF
+pacman -S i3
+EOF
+
+# Démontage des partitions
+umount -R /mnt
+reboot

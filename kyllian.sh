@@ -100,7 +100,7 @@ passwd << EOF
 azerty123
 azerty123
 EOF
-
+arch-chroot /mnt << EOF
 # Générer des mots de passe chiffrés
 encrypted_father=$(openssl passwd -1 "azerty123")
 encrypted_son=$(openssl passwd -1 "azerty123")

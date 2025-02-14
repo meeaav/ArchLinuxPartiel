@@ -87,10 +87,10 @@ grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
 # Installation de GNOME
-arch-chroot /mnt << EOF
-pacman -S --noconfirm gnome gnome-extra
-systemctl enable gdm
-EOF
+#arch-chroot /mnt << EOF
+#pacman -S --noconfirm gnome gnome-extra
+#systemctl enable gdm
+#EOF
 
 # Redémarrage
 echo "Installation terminée. Redémarrage du système..."

@@ -91,7 +91,3 @@ EOF
 #pacman -S --noconfirm gnome gnome-extra
 #systemctl enable gdm
 #EOF
-
-# Redémarrage
-echo "Installation terminée. Redémarrage du système..."
-reboot

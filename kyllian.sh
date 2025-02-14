@@ -14,8 +14,10 @@ sfdisk /dev/sda << EOF
 EOF
 
 # Chiffrement LUKS et LVM sur /dev/sda2
-cryptsetup luksFormat /dev/sda2
-cryptsetup open /dev/sda2 crypt
+password="azerty123"
+echo -n $password | cryptsetup luksFormat /dev/sda2
+echo -n $password | cryptsetup open /dev/sda2 crypt
+
 # Création des volumes logiques avec LVM
 pvcreate /dev/mapper/crypt
 vgcreate vg0 /dev/mapper/crypt
@@ -42,23 +44,23 @@ mkswap /dev/mapper/vg0-lv_swap
 
 # Montage des partitions
 mount /dev/mapper/vg0-lv_root /mnt
-mkdir -p /mnt/home/father
-mount /dev/mapper/vg0-lv_home_father /mnt/home/father
-mkdir -p /mnt/home/son
-mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-mkdir -p /mnt/tmp
-mount /dev/mapper/vg0-lv_tmp /mnt/tmp
-mkdir -p /mnt/var/VM
-mount /dev/mapper/vg0-lv_VM /mnt/var/VM
-mkdir -p /mnt/share
-mount /dev/mapper/vg0-lv_share /mnt/share
+mkdir -p /mnt/VGSYS/home/father
+mount /dev/mapper/vg0-lv_home_father /mnt/VGSYS/home/father
+mkdir -p /mnt/VGSYS/home/son
+mount /dev/mapper/vg0-lv_home_son /mnt/VGSYS/home/son
+mkdir -p /mnt/VGSYS/tmp
+mount /dev/mapper/vg0-lv_tmp /mnt/VGSYS/tmp
+mkdir -p /mnt/VGSYS/var/VM
+mount /dev/mapper/vg0-lv_VM /mnt/VGSYS/var/VM
+mkdir -p /mnt/VGSYS/share
+mount /dev/mapper/vg0-lv_share /mnt/VGSYS/share
 swapon /dev/mapper/vg0-lv_swap
 
 # Monter /dev/sda1 sur /mnt/boot/efi
 
 
-mkdir -p /tmp/efi
-mount /dev/sda1 /tmp/efi
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
 
 # Synchronisation des miroirs
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
@@ -68,13 +70,6 @@ pacstrap -K /mnt base linux linux-firmware
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab
-
-# Configuration du chiffrement dans mkinitcpio
-arch-chroot /mnt << EOF
-echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
-mkinitcpio -P
-EOF
 
 # Configuration de GRUB
 crypt2=$(blkid -s UUID -o value /dev/sda2)

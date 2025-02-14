@@ -5,20 +5,21 @@ timedatectl set-timezone Europe/Paris
 loadkeys fr
 
 # Mise à jour du système
-pacman -Syu << EOF
-y
-EOF
+pacman -Syu --noconfirm
 
 # Création de la table de partition avec sfdisk
+# Partition 1 : EFI (500M)
+# Partition 2 : /boot (500M)
+# Partition 3 : LUKS (reste du disque)
 sfdisk /dev/sda << EOF
-, 500M, EF00  # Partition EFI (pour UEFI)
-, 500M, 8300  # Partition /boot (non chiffrée)
+, 500M, EF00
+, 500M, 8300
 ;
 EOF
 
 # Formater les partitions
-mkfs.vfat /dev/sda1  # Formater la partition EFI en vfat
-mkfs.ext4 /dev/sda2  # Formater la partition /boot en ext4
+mkfs.vfat -F32 /dev/sda1  # Formater la partition EFI en vfat
+mkfs.ext4 /dev/sda2       # Formater la partition /boot en ext4
 
 # Chiffrement de la partition racine avec LUKS
 password="esgi"
@@ -55,16 +56,15 @@ mount /dev/sda2 /mnt/boot  # Monter /boot
 mkdir /mnt/boot/efi
 mount /dev/sda1 /mnt/boot/efi  # Monter /boot/efi (UEFI)
 
-mkdir /mnt/home
-mkdir /mnt/home/father
+mkdir -p /mnt/home/father
 mount /dev/mapper/vg0-lv_home_father /mnt/home/father
-mkdir /mnt/home/son
+mkdir -p /mnt/home/son
 mount /dev/mapper/vg0-lv_home_son /mnt/home/son
-mkdir /mnt/tmp
+mkdir -p /mnt/tmp
 mount /dev/mapper/vg0-lv_tmp /mnt/tmp
 mkdir -p /mnt/var/VM
 mount /dev/mapper/vg0-lv_VM /mnt/var/VM
-mkdir /mnt/share
+mkdir -p /mnt/share
 mount /dev/mapper/vg0-lv_share /mnt/share
 swapon /dev/mapper/vg0-lv_swap
 
@@ -72,7 +72,7 @@ swapon /dev/mapper/vg0-lv_swap
 reflector --country France --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installation de la base
-pacstrap -K /mnt base linux linux-firmware lvm2 efibootmgr grub cryptsetup
+pacstrap /mnt base linux linux-firmware lvm2 efibootmgr grub cryptsetup
 
 # Génération du fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab

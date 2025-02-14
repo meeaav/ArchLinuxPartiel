@@ -20,11 +20,8 @@ echo "######## Modified files ########" >> results.txt
 echo "######## /etc/pacman.d/mirrorlist ########" >> results.txt
 cat /etc/pacman.d/mirrorlist >> results.txt
 
-echo "######## /etc/modules-load.d/dm_crypt.conf ########" >> results.txt
-cat /etc/modules-load.d/dm_crypt.conf >> results.txt
-
-echo "######## /mnt/etc/default/grub ########" >> results.txt
-cat /mnt/etc/default/grub >> results.txt
+echo "######## etc/default/grub ########" >> results.txt
+cat etc/default/grub >> results.txt
 
 echo "######## /etc/mkinitcpio.conf ########" >> results.txt
 cat /etc/mkinitcpio.conf >> results.txt

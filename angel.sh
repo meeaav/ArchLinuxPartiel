@@ -98,8 +98,6 @@ mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Définir un mot de passe root à "esgi"
-echo -e "esgi\nesgi" | passwd
 EOF
 
 # Fin du script

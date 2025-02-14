@@ -12,9 +12,6 @@ mkdir /mnt/home/son/share
 chown son:share /mnt/home/son/share
 chmod 770 /mnt/home/son/share
 
-#Création des arboréscences pour les users
-mkdir -p /mnt/home/father/{Documents,Images,Musique,Vidéos}
-mkdir -p /mnt/home/son/{Documents,Images,Musique,Vidéos}
 
 #Installation de vi pour le fils 
 arch-chroot /mnt << EOF

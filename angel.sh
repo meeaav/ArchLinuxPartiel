@@ -107,4 +107,9 @@ useradd -d /home/father -m father -p "$encrypted_father" -G share -s /bin/bash
 useradd -d /home/son -m son -p "$encrypted_son" -G share -s /bin/bash
 EOF
 
+#Création des arboréscences pour les users
+mkdir -p /mnt/home/father/{Documents,Images,Musique,Vidéos}
+mkdir -p /mnt/home/son/{Documents,Images,Musique,Vidéos}
+
+pacman tree -S -y
 echo "Le système est prêt à être redémarré."

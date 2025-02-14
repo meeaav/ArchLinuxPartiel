@@ -138,10 +138,7 @@ pacman -S --noconfirm firefox vlc discord libreoffice-still
 EOF
 
 arch-chroot /mnt << EOF
-pacman -S i3-wm i3status dmenu --noconfirm
-pacman -S --noconfirm lightdm lightdm-gtk-greeter
-pacman -S --noconfirm alacritty thunar firefox
-systemctl enable lightdm
+pacman -S i3
 EOF
 
 # Démontage des partitions

@@ -16,9 +16,11 @@ vgcreate vg0 /dev/mapper/cryptlvm
 lvcreate -L 10G -n lv_encrypted vg0
 lvcreate -L 20G -n lv_virtualbox vg0
 lvcreate -L 5G -n lv_shared vg0
+lvcreate -l 100%FREE -n lv_root vg0
 
 # Formatage des partitions
 mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/mapper/vg0-lv_root
 mkfs.ext4 /dev/mapper/vg0-lv_encrypted
 mkfs.ext4 /dev/mapper/vg0-lv_virtualbox
 mkfs.ext4 /dev/mapper/vg0-lv_shared
@@ -27,29 +29,35 @@ mkfs.ext4 /dev/mapper/vg0-lv_shared
 mount /dev/mapper/vg0-lv_root /mnt
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
+mkdir /mnt/home
+mount /dev/mapper/vg0-lv_shared /mnt/home
 
 # Installation de base
-pacstrap /mnt base linux linux-firmware
+pacstrap /mnt base linux linux-firmware vim networkmanager
 
-# Configuration système
+# Générer le fichier fstab
 genfstab -U /mnt >> /mnt/etc/fstab
-arch-chroot /mnt ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
-arch-chroot /mnt hwclock --systohc
-echo "fr_FR.UTF-8 UTF-8" >> /mnt/etc/locale.gen
-arch-chroot /mnt locale-gen
-echo "LANG=fr_FR.UTF-8" > /mnt/etc/locale.conf
-echo "HOSTNAME" > /mnt/etc/hostname
-echo "127.0.0.1 localhost" >> /mnt/etc/hosts
-echo "::1 localhost" >> /mnt/etc/hosts
-echo "127.0.1.1 HOSTNAME.localdomain HOSTNAME" >> /mnt/etc/hosts
 
-# Configuration des utilisateurs
-arch-chroot /mnt useradd -m -G wheel -s /bin/bash utilisateur
-echo "utilisateur:azerty123" | arch-chroot /mnt chpasswd
+# Chroot dans le système installé
+arch-chroot /mnt
 
-# Installation des outils supplémentaires
-arch-chroot /mnt pacman -S --noconfirm virtualbox hypriot
+# Configurer le système
+echo "archlinux" > /etc/hostname
+echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo "LANG=fr_FR.UTF-8" > /etc/locale.conf
+echo "KEYMAP=fr" > /etc/vconsole.conf
+systemctl enable NetworkManager
 
-# Finalisation
+# Configurer le mot de passe root
+echo "root:azerty123" | chpasswd
+
+# Installer GRUB (bootloader)
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Quitter chroot et redémarrer
+exit
 umount -R /mnt
-cryptsetup close cryptlvm
+reboot

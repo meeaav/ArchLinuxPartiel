@@ -83,10 +83,7 @@ crypt2=$(blkid -s UUID -o value /dev/sda2)
 echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$crypt2:crypt root=/dev/mapper/vg0-lv_root\"" >> /mnt/etc/default/grub
 
 arch-chroot /mnt << EOF
-pacman -S --noconfirm cryptsetup
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
-mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
